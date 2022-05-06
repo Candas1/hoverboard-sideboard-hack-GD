@@ -30,7 +30,7 @@
 #include "util.h"
 #include "mpu6050.h"
 #include "mpu6050_dmp.h"
-
+#include "qfplib.h"
 
 /* The following functions must be defined for this platform:
  * i2c_write(unsigned char slave_addr, unsigned char reg_addr,
@@ -3650,9 +3650,10 @@ void mpu_calc_euler_angles(void) {
     z = (float)mpu.quat.z / q30;
 
     // Calculate Euler angles: source <https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles>	
-    roll    = atan2(2*(w*x + y*z), 1 - 2*(x*x + y*y));      // roll  (x-axis rotation)
-    pitch   = asin(2*(w*y - z*x));                          // pitch (y-axis rotation)
-    yaw     = atan2(2*(w*z + x*y), 1 - 2*(y*y + z*z));      // yaw   (z-axis rotation)
+    roll    = qfp_fatan2(2*(w*x + y*z), 1 - 2*(x*x + y*y));      // roll  (x-axis rotation)
+    pitch   = qfp_fsin(2*(w*y - z*x));                          // pitch (y-axis rotation)
+    yaw     = qfp_fatan2(2*(w*z + x*y), 1 - 2*(y*y + z*z));      // yaw   (z-axis rotation)
+
 
     // Convert [rad] to [deg*100]
     mpu.euler.roll  = (int16_t)(roll  * RAD2DEG * 100);
