@@ -140,6 +140,6 @@ void mpu_print_to_console(void);
 
 /* Handle user input commands */
 void mpu_handle_input(char c);
-
+void whoAMI();
 #endif // MPU6050_H
 

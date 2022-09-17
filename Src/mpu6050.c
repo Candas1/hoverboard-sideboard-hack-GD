@@ -656,6 +656,8 @@ int mpu_init(void)
 {
     unsigned char data[6];
 
+    whoAMI();
+
     /* Reset device. */
     data[0] = BIT_RESET;
     if (i2c_write(st.hw->addr, st.reg->pwr_mgmt_1, 1, data))
@@ -3964,5 +3966,63 @@ void mpu_handle_input(char c)
 #endif // SERIAL_DEBUG
 }
 
-
+void whoAMI(){
+    unsigned char data[6];
+    
+    // Check WHOAMI register to identify the IMU
+    i2c_read(st.hw->addr, st.reg->who_am_i, 1, data);
+    #ifdef SERIAL_DEBUG
+       if (data[0] == 0x00){
+        // Might not be an Invensense/TDK IMU, try register 0X00   
+        i2c_read(st.hw->addr, 0x00, 1, data);
+       }
+       log_i( "\r\nWHO_AM_I:0x%x", data[0]);
+       switch (data[0])
+       {
+       case 0xA0:
+           log_i("->BNO055");
+           break;    
+       case 0x68:
+           log_i("->MPU6050");
+           break;
+       case 0x70:
+           log_i("->MPU6500");
+           break;
+       case 0x71:
+           log_i("->MPU9250");
+           break;
+       case 0x72:
+           log_i("->MPU6052C");
+           break;
+       case 0x73:
+           log_i("->MPU9255");
+           break;
+       case 0x11:
+           log_i("->ICM-20600");
+           break;
+       case 0xAC:
+           log_i("->ICM-20601");
+           break;
+       case 0x12:
+           log_i("->ICM-20602");
+           break;
+       case 0xAF:
+           log_i("->ICM-20608-G");
+           break;
+       case 0xA6:
+           log_i("->ICM-20609");
+           break;
+       case 0x98:
+           log_i("->ICM-20689");
+           break;
+       case 0x20:
+           log_i("->ICM-20690");
+           break;
+       default:
+           log_i("->Unknown IMU");
+           break;
+       }
+       log_i( "\r\n");
+    #endif
+}
 
