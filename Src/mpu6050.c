@@ -3972,15 +3972,11 @@ void whoAMI(){
     // Check WHOAMI register to identify the IMU
     i2c_read(st.hw->addr, st.reg->who_am_i, 1, data);
     #ifdef SERIAL_DEBUG
-       if (data[0] == 0x00){
-        // Might not be an Invensense/TDK IMU, try register 0X00   
-        i2c_read(st.hw->addr, 0x00, 1, data);
-       }
        log_i( "\r\nWHO_AM_I:0x%x", data[0]);
        switch (data[0])
        {
-       case 0xA0:
-           log_i("->BNO055");
+       case 0x00:
+           log_i("->Not an Invensense IMU?"); 
            break;    
        case 0x68:
            log_i("->MPU6050");
@@ -4012,11 +4008,17 @@ void whoAMI(){
        case 0xA6:
            log_i("->ICM-20609");
            break;
+       case 0xA9:
+           log_i("->IAM-20680");
+           break;
        case 0x98:
            log_i("->ICM-20689");
            break;
        case 0x20:
            log_i("->ICM-20690");
+           break;
+       case 0xEA:
+           log_i("->ICM-20948");
            break;
        default:
            log_i("->Unknown IMU");
